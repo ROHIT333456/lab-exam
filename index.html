@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Course List Drag and Drop</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            width: 300px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 12px;
+            margin: 8px 0;
+            background: #e0e0e0;
+            cursor: grab;
+            border-radius: 4px;
+        }
+
+        li.dragging {
+            opacity: 0.5;
+        }
+
+        .order {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Course List</h2>
+
+    <ul id="courseList">
+        <li draggable="true">Data Structures</li>
+        <li draggable="true">Operating System</li>
+        <li draggable="true">Database Management System</li>
+        <li draggable="true">Computer Networks</li>
+        <li draggable="true">Java Programming</li>
+    </ul>
+
+    <div class="order">
+        <strong>Updated Order:</strong>
+        <ol id="updatedOrder"></ol>
+    </div>
+</div>
+
+<script>
+    const list = document.getElementById("courseList");
+    const items = document.querySelectorAll("#courseList li");
+    const output = document.getElementById("updatedOrder");
+
+    let draggedItem = null;
+
+    items.forEach(item => {
+        item.addEventListener("dragstart", () => {
+            draggedItem = item;
+            item.classList.add("dragging");
+        });
+
+        item.addEventListener("dragend", () => {
+            item.classList.remove("dragging");
+            showUpdatedOrder();
+        });
+
+        item.addEventListener("dragover", e => {
+            e.preventDefault();
+        });
+
+        item.addEventListener("drop", e => {
+            e.preventDefault();
+            if (draggedItem !== item) {
+                const draggedIndex = [...list.children].indexOf(draggedItem);
+                const droppedIndex = [...list.children].indexOf(item);
+
+                if (draggedIndex < droppedIndex) {
+                    list.insertBefore(draggedItem, item.nextSibling);
+                } else {
+                    list.insertBefore(draggedItem, item);
+                }
+            }
+        });
+    });
+
+    function showUpdatedOrder() {
+        output.innerHTML = "";
+        document.querySelectorAll("#courseList li").forEach(course => {
+            const li = document.createElement("li");
+            li.textContent = course.textContent;
+            output.appendChild(li);
+        });
+    }
+
+    showUpdatedOrder();
+</script>
+
+</body>
+</html>
